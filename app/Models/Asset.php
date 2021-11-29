@@ -9,7 +9,7 @@ use Venturecraft\Revisionable\RevisionableTrait;
 
 class Asset extends Model
 {
-    protected $revisionEnabled = true;
+    protected $revisionCreationsEnabled = false;
     use HasFactory;
     use SoftDeletes;
     use RevisionableTrait;
