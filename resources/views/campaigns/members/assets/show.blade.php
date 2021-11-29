@@ -30,7 +30,9 @@
                             <div class="card" style="">
 
                                 @if($asset->type === 'image')
-                                    <img class="card-img-top" src="{{asset($asset->file)}}" alt="Card image cap">
+                                    @if(!empty($asset->file))
+                                        <img class="card-img-top" src="{{asset($asset->file)}}" alt="Card image cap">
+                                    @endif
                                 @else
                                     <video width="340" controls >
                                         <source src="{{asset($asset->file)}}">
@@ -38,12 +40,17 @@
                                 @endif
 
                                 <div class="card-body">
-                                    <h5 class="card-title">Caption</h5>
                                     <p class="card-text">
                                         {!! $asset->caption !!}
                                     </p>
-                                    <p class="card-text"><small class="text-muted">{{$asset->created_at}}</small></p>
-                                    <span class="badge badge-secondary">{{$asset->revisionHistory()->count() - 1}} revisions</span>
+
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            {{$asset->created_at}}
+                                        </small>
+                                    </p>
+
+                                    <span class="badge badge-secondary">{{$asset->revisionHistory()->count()}} revisions</span>
                                 </div>
                             </div>
                         </a>
