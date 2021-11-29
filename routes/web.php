@@ -166,6 +166,12 @@ Route::post('/assets/update/{id}', [AssetController::class, 'update'])
     ->middleware(['can:update, App\Model\Campaign'])
     ->name('assets.update');
 
+Route::delete('/assets/destroy/{id}/{cid}/{uid}', [AssetController::class, 'destroy'])
+    ->middleware(['auth'])
+    ->middleware('can:delete, App\Model\Campaign')
+    ->name('assets.destroy');
+
+
 require __DIR__.'/auth.php';
 
 Auth::routes();
