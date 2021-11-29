@@ -87,4 +87,21 @@ class AssetController extends Controller
         return redirect()->route('campaigns.showMemberAssets', [$campaign_id, $user_id])
             ->with('message','Asset has been created successfully');
     }
+
+    /* Delete asset by id */
+    public function destroy($id, $cid, $uid)
+    {
+        $asset = Asset::find($id);
+
+        if(!$asset)
+            return abort(404);
+
+        $asset->delete();
+
+        $campaign = Campaign::find($cid);
+        $user = User::find($uid);
+
+        return redirect()->route('campaigns.showMemberAssets', [$campaign, $user])
+            ->with('success','Asset has been deleted successfully');
+    }
 }
