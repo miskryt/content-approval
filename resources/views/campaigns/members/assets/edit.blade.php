@@ -16,15 +16,26 @@
                 </ul>
             </div>
         @endif
+
         <h4>Editing the asset</h4>
         <h4>Campaign: {!! $campaign->name !!}</h4>
         <h4>Member: {!! $user->first_name.' '.$user->last_name !!}</h4>
+
+
+        @foreach($asset->revisionHistory as $history )
+            @if($history->key == 'created_at' && !$history->old_value)
+                <li>{{ $history->userResponsible()->first_name }} created this resource at {{ $history->newValue() }}</li>
+            @else
+                <li>{{ $history->userResponsible()->first_name }} changed {{ $history->fieldName() }} from {{ $history->oldValue() }} to {{ $history->newValue() }}</li>
+            @endif
+        @endforeach
+
         <div class="card  mb-3" >
 
             <div class="card-header">
-                @foreach($asset->revisionHistory as $history )
-                    <li>{{ $history->userResponsible()->first_name }} changed {{ $history->fieldName() }} from {{ $history->oldValue() }} to {{ $history->newValue() }}</li>
-                @endforeach
+                {!! Form::open(['method' => 'DELETE','route' => ['assets.destroy', $asset->id, $campaign->id, $user->id],'style'=>'display:inline']) !!}
+                {!! Form::submit('Delete', ['class' => 'btn btn-danger confirm', 'data-confirm' => 'Are you sure you want to delete?']) !!}
+                {!! Form::close() !!}
             </div>
 
             <div class="card-body">
