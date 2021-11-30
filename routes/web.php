@@ -133,12 +133,12 @@ Route::get('/campaigns/addclients/{id}', [CampaignController::class, 'addClients
 
 Route::post('/campaigns/addclients/{id}', [CampaignController::class, 'addClients'])
     ->middleware(['auth'])
-    ->middleware('can:update, App\Model\Campaign')
+    ->middleware('can:addMembers, App\Model\Campaign')
     ->name('campaigns.addclients');
 
 Route::post('/campaigns/removeclients/{id}', [CampaignController::class, 'removeClients'])
     ->middleware(['auth'])
-    ->middleware('can:update, App\Model\Campaign')
+    ->middleware('can:removeMembers, App\Model\Campaign')
     ->name('campaigns.removeclients');
 
 Route::get('/campaigns/members/assets/{id}/{uid}', [CampaignController::class, 'showMemberAssetsView'])

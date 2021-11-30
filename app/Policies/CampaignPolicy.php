@@ -21,6 +21,16 @@ class CampaignPolicy
         return true;//$user->isSuperAdmin();
     }
 
+    public function addMembers(User $user)
+    {
+        return $user->isSuperAdmin();
+    }
+
+    public function removeMembers(User $user)
+    {
+        return $user->isSuperAdmin();
+    }
+
     /**
      * Determine whether the user can view the model.
      *
