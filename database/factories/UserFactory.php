@@ -25,8 +25,8 @@ class UserFactory extends Factory
             'password' => Hash::make('266252'),
             'remember_token' => Str::random(10),
             'role_id' => function(){
-                //return Role::where('name', 'Client')->first()->id;
-                return Role::where('name', 'Influencer')->first()->id;
+                return Role::where('name', 'Client')->first()->id;
+                //return Role::where('name', 'Influencer')->first()->id;
             },
         ];
     }
