@@ -76,4 +76,14 @@ class User extends Authenticatable
     {
         return $this->role_id === Role::where('name', 'Super-Admin')->first()->id;
     }
+
+    public function isClient(): bool
+    {
+        return $this->role_id === Role::where('name', 'Client')->first()->id;
+    }
+
+    public function isMember(): bool
+    {
+        return $this->role_id === Role::where('name', 'Influencer')->first()->id;
+    }
 }

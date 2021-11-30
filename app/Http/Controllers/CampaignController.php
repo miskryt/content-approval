@@ -29,11 +29,12 @@ class CampaignController extends Controller
         }
         else
         {
-            $campaigns = Campaign::where('user_id', $user->id)
-                ->with('users')
+            $campaigns = Campaign::whereHas('users')
                 ->where('campaigns.name', 'like', '%'.$search.'%')
-                ->sortable()
+                ->sortable()//->toSql();
                 ->paginate(10);
+
+            //dd($campaigns);
         }
 
         return view('campaigns.index', compact('campaigns', 'search'));
@@ -159,6 +160,36 @@ class CampaignController extends Controller
     /* Open view to show existing campaign */
     public function show(Request $request, $id)
     {
+        $user = Auth::user();
+
+        if($user->role->name === 'Super-Admin')
+            return $this->showAdmin($request, $id);
+
+        if($user->role->name === 'Influencer')
+            return $this->showMember($request, $id);
+
+        if($user->role->name === 'Client')
+            return $this->showClient($request, $id);
+    }
+
+
+    private function showMember(Request $request, $id)
+    {
+        $search = $request->input('search');
+        $campaign = Campaign::find($id);
+
+        if(!$campaign)
+            return abort(404);
+
+        $assets = Asset::with('user')->get();
+
+        $user = Auth::user();
+
+        return view('campaigns.members.index', compact('campaign', 'user', 'assets', 'search'));
+    }
+
+    private function showClient(Request $request, $id)
+    {
         $search = $request->input('search');
         $campaign = Campaign::find($id);
 
@@ -169,10 +200,44 @@ class CampaignController extends Controller
         {
             $q->where('name', 'Influencer');
         })
-           ->whereHas('campaigns', function ($q) use($id)
-           {
-               $q->where('campaign_user.campaign_id', $id);
-           })
+            ->whereHas('campaigns', function ($q) use($id)
+            {
+                $q->where('campaign_user.campaign_id', $id);
+            })
+
+            ->where(function($q) use($search, $id)
+            {
+                if($search)
+                {
+                    $q->where('users.first_name', 'like', '%'.$search.'%')
+                        ->orWhere('users.last_name', 'like', '%'.$search.'%')
+                        ->orWhere('users.username', 'like', '%'.$search.'%')
+                        ->orWhere('users.email', 'like', '%'.$search.'%');
+                }
+            })
+            ->sortable();
+
+        $users = $query->paginate(10);
+
+        return view('campaigns.show', compact('campaign', 'users', 'search'));
+    }
+
+    private function showAdmin(Request $request, $id)
+    {
+        $search = $request->input('search');
+        $campaign = Campaign::find($id);
+
+        if(!$campaign)
+            return abort(404);
+
+        $query = User::whereHas('role', function($q)
+        {
+            $q->where('name', 'Influencer');
+        })
+            ->whereHas('campaigns', function ($q) use($id)
+            {
+                $q->where('campaign_user.campaign_id', $id);
+            })
 
             ->where(function($q) use($search, $id)
             {
@@ -340,7 +405,7 @@ class CampaignController extends Controller
             $q->where('assets.user_id', $uid)->where('campaign_id', $id);
         })->get();
 
-        return view('campaigns.members.assets.show', compact('campaign', 'user', 'assets'));
+        return view('assets.index', compact('campaign', 'user', 'assets'));
     }
 
     public function createMemberAssets($id, $uid)
@@ -355,6 +420,6 @@ class CampaignController extends Controller
             return abort(404);
 
 
-        return view('campaigns.members.assets.create', compact('campaign', 'user'));
+        return view('assets.create', compact('campaign', 'user'));
     }
 }

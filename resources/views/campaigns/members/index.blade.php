@@ -2,12 +2,53 @@
 
 @section('content')
     <div class="container">
-        {{ Breadcrumbs::render('campaign.assets.view', $campaign, $user) }}
+        {{ Breadcrumbs::render('campaigns.view', $campaign) }}
         @if(session('message'))
             <p class="alert alert-info">{!! session('message') !!}</p>
         @endif
         <h4>Campaign: {!! $campaign->name !!}</h4>
-        <h4>Member: {!! $user->first_name.' '.$user->last_name !!}</h4>
+        <div class="card mb-3 " >
+            <div class="card-header">
+
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <td>CLIENTS</td>
+                        <td>
+                            @if($campaign->getOwners())
+                                @foreach($campaign->getOwners() as $client)
+                                    <a href="/users/show/{{$client->id}}">{!! $client->first_name.' '.$client->last_name !!} </a>,&nbsp;
+                                @endforeach
+                            @else
+                                Not assigned yet
+                            @endif
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>DESCRIPTION</td>
+                        <td>{!! $campaign->description !!}</td>
+                    </tr>
+                    <tr>
+                        <td>STATUS</td>
+                        <td>{!! $campaign->statuses->name !!}</td>
+                    </tr>
+                    <tr>
+                        <td>LONG DESCRIPTION</td>
+                        <td>{!! $campaign->long_description !!}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-4">
+                <h4>Your assets</h4>
+            </div>
+        </div>
 
 
         <div class="card  mb-3" >
@@ -25,7 +66,7 @@
                     @endif
 
                     @foreach($assets as $asset)
-                        @php $history = $asset->revisionHistory @endphp
+
                         <a href="{{route('assets.edit', [$asset->id, $campaign->id, $user->id])}}">
                             <div class="card" style="">
 
@@ -59,9 +100,5 @@
 
             </div>
         </div>
-
-
-
-
     </div>
 @endsection

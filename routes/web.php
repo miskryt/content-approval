@@ -141,14 +141,15 @@ Route::post('/campaigns/removeclients/{id}', [CampaignController::class, 'remove
     ->middleware('can:update, App\Model\Campaign')
     ->name('campaigns.removeclients');
 
-Route::get('/campaigns/{id}/members/{uid}/assets', [CampaignController::class, 'showMemberAssetsView'])
+Route::get('/campaigns/members/assets/{id}/{uid}', [CampaignController::class, 'showMemberAssetsView'])
     ->middleware(['auth'])
-    ->middleware('can:update, App\Model\Campaign')
+    ->middleware('can:update, App\Model\Asset')
     ->name('campaigns.showMemberAssets');
+
 
 Route::get('/campaigns/{id}/members/{uid}/assets/create', [CampaignController::class, 'createMemberAssets'])
     ->middleware(['auth'])
-    ->middleware('can:update, App\Model\Campaign')
+    ->middleware('can:create, App\Model\Asset')
     ->name('member.asset.create');
 
 Route::post('/assets/store', [AssetController::class, 'store'])
@@ -158,17 +159,17 @@ Route::post('/assets/store', [AssetController::class, 'store'])
 
 Route::get('/campaigns/assets/edit/{id}/{c_id}/{u_id}', [AssetController::class, 'edit'])
     ->middleware(['auth'])
-    ->middleware(['can:update, App\Model\Campaign'])
+    ->middleware(['can:edit, App\Model\Asset'])
     ->name('assets.edit');
 
 Route::post('/assets/update/{id}', [AssetController::class, 'update'])
     ->middleware(['auth'])
-    ->middleware(['can:update, App\Model\Campaign'])
+    ->middleware(['can:update, App\Model\Asset'])
     ->name('assets.update');
 
 Route::delete('/assets/destroy/{id}/{cid}/{uid}', [AssetController::class, 'destroy'])
     ->middleware(['auth'])
-    ->middleware('can:delete, App\Model\Campaign')
+    ->middleware('can:delete, App\Model\Asset')
     ->name('assets.destroy');
 
 

@@ -53,7 +53,7 @@ class AssetController extends Controller
         $campaign = Campaign::find($c_id);
         $user = User::find($u_id);
 
-        return view('campaigns.members.assets.edit',compact('asset', 'campaign', 'user'));
+        return view('assets.edit',compact('asset', 'campaign', 'user'));
     }
 
     /* Update data for a existing asset */

@@ -30,7 +30,7 @@ class CampaignPolicy
      */
     public function view(User $user)
     {
-        return $user->isSuperAdmin();
+        return true;//$user->isSuperAdmin();
     }
 
     /**
