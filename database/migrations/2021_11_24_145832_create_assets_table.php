@@ -15,7 +15,8 @@ class CreateAssetsTable extends Migration
     {
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
+            $table->string('content_type');
+            $table->string('file_type');
             $table->text('caption')->nullable();
             $table->string('file')->nullable();
             $table->softDeletes();
