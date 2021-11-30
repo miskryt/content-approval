@@ -14,28 +14,23 @@ class CampaignController extends Controller
     /* Show campaigns list */
     public function index(Request $request)
     {
-        $user = Auth::user();
-
         $search = $request->input('search');
 
-        if($user->isSuperAdmin())
-        {
-            $campaigns = Campaign::with('users')
-                ->with('statuses')
-                ->orderByDesc('created_at')
-                ->where('campaigns.name', 'like', '%'.$search.'%')
-                ->sortable()
-                ->paginate(10);
-        }
-        else
-        {
-            $campaigns = Campaign::whereHas('users')
-                ->where('campaigns.name', 'like', '%'.$search.'%')
-                ->sortable()//->toSql();
-                ->paginate(10);
+        $query = Campaign::with('users');
+        $query->with('statuses');
+        $query->orderByDesc('created_at');
+        $query->where('campaigns.name', 'like', '%'.$search.'%');
+        $query->sortable();
 
-            //dd($campaigns);
+        if(Auth::user()->isClient() || Auth::user()->isMember())
+        {
+            $query->whereHas('users', function ($q)
+            {
+               $q->where('user_id', Auth::user()->id);
+            });
         }
+
+        $campaigns = $query->paginate(10);
 
         return view('campaigns.index', compact('campaigns', 'search'));
     }
