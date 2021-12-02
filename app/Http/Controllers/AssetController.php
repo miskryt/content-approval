@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Asset;
+use App\Models\AssetStatus;
 use App\Models\Campaign;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AssetController extends Controller
 {
@@ -16,10 +17,12 @@ class AssetController extends Controller
         $this->validate($request,
         [
             'caption' => 'required|min:3',
+            'content_type' => 'required|min:5',
             'file' => 'mimetypes:image/jpeg,image/png,video/x-ms-asf,video/x-flv,video/mp4,application/x-mpegURL,video/MP2T,video/3gpp,video/quicktime,video/x-msvideo,video/x-ms-wmv,video/avi'
         ],
         [
-            'caption.required' => 'You have to write caption!',
+            'caption.required' => 'Please, fill in the caption!',
+            'content_type.required' => 'Please, fill in the post type!',
         ]);
 
         $input = $request->all();
@@ -27,7 +30,18 @@ class AssetController extends Controller
         $campaign_id = $input['campaign_id'];
         $user_id = $input['user_id'];
 
-        $asset = Asset::create($input);
+        //$asset = Asset::create($input);
+        $asset = new Asset();
+
+        $asset->asset_status_id = AssetStatus::where('name', 'New')->first()->id;
+        $asset->content_type = $input['content_type'];
+        $asset->file_type = $input['file_type'];
+        $asset->user_id = $input['user_id'];
+        $asset->campaign_id = $input['campaign_id'];
+        $asset->caption = $input['caption'];
+
+        $asset->save();
+
 
         if($request->file())
         {
@@ -38,7 +52,7 @@ class AssetController extends Controller
             $asset->save();
         }
 
-        return redirect()->route('campaigns.showMemberAssets', [$campaign_id, $user_id])
+        return redirect()->route('campaigns.show', [$campaign_id, $user_id])
             ->with('message','Asset has been created successfully');
     }
 
@@ -103,5 +117,27 @@ class AssetController extends Controller
 
         return redirect()->route('campaigns.showMemberAssets', [$campaign, $user])
             ->with('success','Asset has been deleted successfully');
+    }
+
+    public function show($id, $cid)
+    {
+        $campaign = Campaign::find($cid);
+
+        if(!$campaign)
+            return abort(404);
+
+        $user = Auth::user();
+
+        $asset = Asset::with('status')->where('id', $id)->first();
+
+        if(!$asset)
+            return abort(404);
+
+        if(!$asset->canBeOpened())
+        {
+            abort(403);
+        }
+
+        return view('assets.show',compact('asset', 'campaign', 'user'));
     }
 }

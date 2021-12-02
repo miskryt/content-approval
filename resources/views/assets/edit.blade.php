@@ -45,7 +45,12 @@
                 <form action="{{ route('assets.update', $asset->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
-                    <div class="form-group" id="">
+                    <div class="form-group @error("content_type") alert alert-danger @enderror" id="">
+                        <label for="assetCaption">Content type</label>
+                        <input type="text" class="form-control" name="content_type" value="{{$asset->content_type}}" placeholder="Instagram story, Instagram post, Facebook post, etc."/>
+                    </div>
+
+                    <div class="form-group @error("caption") alert alert-danger @enderror" id="">
                         <label for="assetCaption">Caption text</label>
                         <textarea class="form-control" id="assetCaption" rows="3" name="caption">
                             {!! $asset->caption !!}

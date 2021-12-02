@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             RolesTableSeeder::class,
             AdminSeeder::class,
             CampaignStatusesTableSeeder::class,
+            AssetStatusesTableSeeder::class,
         ]);
     }
 }

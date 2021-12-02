@@ -114,7 +114,14 @@
                             <td>{{$user->last_name}}</td>
                             <td>{{$user->username}}</td>
                             <td>{{$user->email}}</td>
-                            <td><a class="" href="{{route('campaigns.showMemberAssets', [$campaign->id, $user->id])}}">Assets</a></td>
+                            <td>
+                                <a class="" href="{{route('campaigns.showMemberAssets', [$campaign->id, $user->id])}}">Assets</a>
+
+                                @if($user->hasNewAssets())
+                                    <span class="badge badge-primary">{{count($user->newAssets())}} New!</span>
+                                @endif
+
+                            </td>
                         </tr>
                         @endforeach
                         </tbody>

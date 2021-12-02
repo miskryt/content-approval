@@ -38,6 +38,11 @@ class Campaign extends Model
         return $this->belongsTo(CampaignStatus::class, 'campaign_status_id');
     }
 
+    public function assets()
+    {
+        return $this->hasMany(Asset::class);
+    }
+
 
     public function addMembers($users)
     {

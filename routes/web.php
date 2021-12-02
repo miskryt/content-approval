@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AssetController;
+use App\Models\Asset;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CampaignController;
@@ -141,20 +142,20 @@ Route::post('/campaigns/removeclients/{id}', [CampaignController::class, 'remove
     ->middleware('can:removeMembers, App\Model\Campaign')
     ->name('campaigns.removeclients');
 
-Route::get('/campaigns/members/assets/{id}/{uid}', [CampaignController::class, 'showMemberAssetsView'])
+Route::get('/campaigns/members/assets/show/{id}/{uid}', [CampaignController::class, 'showMemberAssetsView'])
     ->middleware(['auth'])
     ->middleware('can:update, App\Model\Asset')
     ->name('campaigns.showMemberAssets');
 
 
-Route::get('/campaigns/{id}/members/{uid}/assets/create', [CampaignController::class, 'createMemberAssets'])
+Route::get('/campaigns/members/assets/create/{cid}', [CampaignController::class, 'createMemberAssets'])
     ->middleware(['auth'])
     ->middleware('can:create, App\Model\Asset')
     ->name('member.asset.create');
 
 Route::post('/assets/store', [AssetController::class, 'store'])
     ->middleware(['auth'])
-    ->middleware(['can:update, App\Model\Campaign'])
+    ->middleware(['can:store, App\Model\Asset'])
     ->name('assets.store');
 
 Route::get('/campaigns/assets/edit/{id}/{c_id}/{u_id}', [AssetController::class, 'edit'])
@@ -171,6 +172,12 @@ Route::delete('/assets/destroy/{id}/{cid}/{uid}', [AssetController::class, 'dest
     ->middleware(['auth'])
     ->middleware('can:delete, App\Model\Asset')
     ->name('assets.destroy');
+
+Route::get('/assets/show/{id}/{cid}', [AssetController::class, 'show'])
+    ->middleware(['auth'])
+    ->middleware(['can:show, App\Model\Asset'])
+    ->name('assets.show');
+
 
 
 require __DIR__.'/auth.php';

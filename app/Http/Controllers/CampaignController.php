@@ -176,7 +176,11 @@ class CampaignController extends Controller
         if(!$campaign)
             return abort(404);
 
-        $assets = Asset::with('user')->get();
+        $assets = Asset::whereHas('user', function ($q)
+        {
+            $q->where('assets.user_id', Auth::user()->id);
+        })
+            ->with('status')->sortable()->paginate(10);
 
         $user = Auth::user();
 
@@ -186,7 +190,11 @@ class CampaignController extends Controller
     private function showClient(Request $request, $id)
     {
         $search = $request->input('search');
-        $campaign = Campaign::find($id);
+
+        $campaign = Campaign::whereHas('users', function ($q)
+        {
+            $q->where('campaign_user.user_id', Auth::user()->id);
+        })->first();
 
         if(!$campaign)
             return abort(404);
@@ -229,22 +237,23 @@ class CampaignController extends Controller
         {
             $q->where('name', 'Influencer');
         })
-            ->whereHas('campaigns', function ($q) use($id)
-            {
-                $q->where('campaign_user.campaign_id', $id);
-            })
+        ->whereHas('campaigns', function ($q) use($id)
+        {
+            $q->where('campaign_user.campaign_id', $id);
+        })
 
-            ->where(function($q) use($search, $id)
+        ->where(function($q) use($search, $id)
+        {
+            if($search)
             {
-                if($search)
-                {
-                    $q->where('users.first_name', 'like', '%'.$search.'%')
-                        ->orWhere('users.last_name', 'like', '%'.$search.'%')
-                        ->orWhere('users.username', 'like', '%'.$search.'%')
-                        ->orWhere('users.email', 'like', '%'.$search.'%');
-                }
-            })
-            ->sortable();
+                $q->where('users.first_name', 'like', '%'.$search.'%')
+                    ->orWhere('users.last_name', 'like', '%'.$search.'%')
+                    ->orWhere('users.username', 'like', '%'.$search.'%')
+                    ->orWhere('users.email', 'like', '%'.$search.'%');
+            }
+        })
+        ->with('assets')
+        ->sortable();
 
         $users = $query->paginate(10);
 
@@ -383,10 +392,21 @@ class CampaignController extends Controller
         return redirect()->route('campaigns.edit', $id)->with('message','Clients have been removed');
     }
 
-    /* Open view to show members's assets in existing campaign */
+    /* Open view to show members's assets in existing campaign for selected user */
     public function showMemberAssetsView($id, $uid)
     {
-        $campaign = Campaign::find($id);
+        if(Auth::user()->isSuperAdmin())
+        {
+            $campaign = Campaign::find($id);
+        }
+        else
+        {
+            $campaign = Campaign::whereHas('users', function ($q)
+            {
+                $q->where('campaign_user.user_id', Auth::user()->id);
+            })->first();
+        }
+
         $user = User::find($uid);
 
         if(!$campaign)
@@ -398,20 +418,17 @@ class CampaignController extends Controller
         $assets = Asset::whereHas('user', function ($q) use($uid, $id)
         {
             $q->where('assets.user_id', $uid)->where('campaign_id', $id);
-        })->get();
+        })->sortable()->paginate(10);
 
         return view('assets.index', compact('campaign', 'user', 'assets'));
     }
 
-    public function createMemberAssets($id, $uid)
+    public function createMemberAssets($cid)
     {
-        $campaign = Campaign::find($id);
-        $user = User::find($uid);
+        $campaign = Campaign::find($cid);
+        $user = Auth::user();
 
         if(!$campaign)
-            return abort(404);
-
-        if(!$user)
             return abort(404);
 
 

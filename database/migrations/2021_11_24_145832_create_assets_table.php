@@ -19,6 +19,9 @@ class CreateAssetsTable extends Migration
             $table->string('file_type');
             $table->text('caption')->nullable();
             $table->string('file')->nullable();
+            $table->integer('asset_status_id');
+            $table->boolean('caption_approved')->default(0);
+            $table->boolean('file_approved')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

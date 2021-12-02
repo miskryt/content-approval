@@ -13,49 +13,55 @@
         <div class="card  mb-3" >
 
             <div class="card-header">
-                <a class="btn btn-info float-left" href="{{ route('member.asset.create', [$campaign->id, $user->id]) }}">Add asset</a>
+                @can('create', App\Models\Asset::class)
+                <a class="btn btn-info float-left" href="{{ route('member.asset.create', [$campaign->id]) }}">Add asset</a>
+                @endcan
             </div>
 
             <div class="card-body">
 
-                <div class="card-columns">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">@sortablelink('content_type', 'Content type')</th>
+                        <th scope="col">@sortablelink('created_at', 'Date')</th>
+                        <th scope="col">@sortablelink('status', 'Status')</th>
+                        <th scope="col">@sortablelink('revisions', 'Revisions')</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
 
                     @if($assets->count() === 0)
-                        User has no assets
+                        <tr>
+                            <td>
+                                There are no assets
+                            </td>
+                        </tr>
                     @endif
-
                     @foreach($assets as $asset)
-                        @php $history = $asset->revisionHistory @endphp
-                        <a href="{{route('assets.edit', [$asset->id, $campaign->id, $user->id])}}">
-                            <div class="card" style="">
-
-                                @if($asset->type === 'image')
-                                    @if(!empty($asset->file))
-                                        <img class="card-img-top" src="{{asset($asset->file)}}" alt="Card image cap">
-                                    @endif
+                        <tr>
+                            <td>{{$asset->content_type}}</td>
+                            <td>{{$asset->created_at}}</td>
+                            <td>{{$asset->status->name}}</td>
+                            <td>{{$asset->revisionHistory()->count()}}</td>
+                            <td>
+                                @if($asset->canBeOpened())
+                                    <a class="" href="{{route('assets.show', [$asset->id, $campaign->id])}}">Open</a>
                                 @else
-                                    <video width="340" controls >
-                                        <source src="{{asset($asset->file)}}">
-                                    </video>
+                                    <span class="badge badge-primary">On review</span>
                                 @endif
-
-                                <div class="card-body">
-                                    <p class="card-text">
-                                        {!! $asset->caption !!}
-                                    </p>
-
-                                    <p class="card-text">
-                                        <small class="text-muted">
-                                            {{$asset->created_at}}
-                                        </small>
-                                    </p>
-
-                                    <span class="badge badge-secondary">{{$asset->revisionHistory()->count()}} revisions</span>
-                                </div>
-                            </div>
-                        </a>
+                            </td>
+                        </tr>
                     @endforeach
-                </div>
+                    </tbody>
+                </table>
+
+                {!! $assets->onEachSide(3)->appends(Request::except('page'))->links('vendor.pagination.bootstrap-5') !!}
+
+                <p>
+                    Displaying {{$assets->count()}} of {{ $assets->total() }} asset(s).
+                </p>
 
             </div>
         </div>

@@ -16,6 +16,8 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
     use Sortable;
 
+    private $newAssets = [];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -85,5 +87,26 @@ class User extends Authenticatable
     public function isMember(): bool
     {
         return $this->role_id === Role::where('name', 'Influencer')->first()->id;
+    }
+
+    public function hasNewAssets()
+    {
+        foreach ($this->assets as $asset)
+        {
+            if($asset->status->name === AssetStatus::where('name', 'New')->first()->name)
+            {
+                $this->newAssets[] = $asset;
+            }
+        }
+
+        if(count($this->newAssets()) > 0)
+        {
+            return true;
+        }
+    }
+
+    public function newAssets()
+    {
+        return ($this->newAssets);
     }
 }

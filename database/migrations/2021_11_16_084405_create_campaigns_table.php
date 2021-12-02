@@ -19,7 +19,7 @@ class CreateCampaignsTable extends Migration
             $table->integer('user_id')->nullable();
             $table->string('description')->nullable();
             $table->text('long_description')->nullable();
-            $table->integer('campaign_status_id')->nullable();
+            $table->integer('campaign_status_id');
             $table->timestamps();
 
             $table->index('name');

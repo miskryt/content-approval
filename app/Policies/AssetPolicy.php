@@ -12,7 +12,17 @@ class AssetPolicy
 
     public function create(User $user)
     {
-        return true;
+        return  $user->isMember();
+    }
+
+    public function store(User $user)
+    {
+        return  $user->isMember();
+    }
+
+    public function show(User $user)
+    {
+        return true;// $user->isSuperAdmin();
     }
 
     public function edit(User $user)

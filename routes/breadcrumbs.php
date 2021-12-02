@@ -57,6 +57,12 @@ Breadcrumbs::for('campaign.assets.view', function (BreadcrumbTrail $trail, $camp
     $trail->push("Member's assets", route('campaigns.addclients', $campaign));
 });
 
+Breadcrumbs::for('campaign.asset.show', function (BreadcrumbTrail $trail, $campaign, $user) {
+    $trail->parent('campaigns');
+    $trail->push($campaign->name, route('campaigns.show', $campaign));
+    $trail->push("Review asset", route('campaigns.addclients', $campaign));
+});
+
 Breadcrumbs::for('member.asset.create', function (BreadcrumbTrail $trail, $campaign, $user) {
     $trail->parent('campaigns');
     $trail->push($campaign->name, route('campaigns.show', $campaign));
@@ -68,3 +74,5 @@ Breadcrumbs::for('member.asset.edit', function (BreadcrumbTrail $trail, $campaig
     $trail->push($campaign->name, route('campaigns.show', $campaign));
     $trail->push("Edit asset", route('campaigns.addclients', $campaign));
 });
+
+

@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Asset;
+use App\Models\Campaign;
 use App\Models\Role;
+use App\Policies\AssetPolicy;
+use App\Policies\CampaignPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -17,6 +21,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
          User::class => UserPolicy::class,
+         Campaign::class => CampaignPolicy::class,
+         Asset::class => AssetPolicy::class,
     ];
 
     /**
