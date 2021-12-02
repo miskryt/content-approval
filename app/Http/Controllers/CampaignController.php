@@ -407,7 +407,10 @@ class CampaignController extends Controller
             })->first();
         }
 
-        $user = User::find($uid);
+        $user = User::whereHas('campaigns', function ($q) use($uid, $id)
+        {
+            $q->where('campaign_user.user_id', $uid)->where('campaign_user.campaign_id', $id);
+        })->first();
 
         if(!$campaign)
             return abort(404);
